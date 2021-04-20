@@ -22,7 +22,7 @@ Source1:        redis.conf
 Source2:        redis-server.service
 Source3:        sentinel.conf
 Source4:        redis-sentinel.service
-
+Source5:        redis_sysctl.conf
 
 ### if you want do make test, you need  `yum install tcl tcltls`
 BuildRequires:  systemd, gcc, make, openssl-devel
@@ -56,8 +56,8 @@ and automatic partitioning with Redis Cluster.
      MALLOC=jemalloc \
      BUILD_TLS=yes   \
      USE_SYSTEMD=no  \
-	 CFLAGS="-DUSE_PROCESSOR_CLOCK" \
-	 V=1
+     CFLAGS="-DUSE_PROCESSOR_CLOCK" \
+     V=1
 
 
 
@@ -66,12 +66,14 @@ rm -rf %{buildroot}
 %{__make} install PREFIX=%{buildroot}/usr/local
 
 mkdir -p %{buildroot}/etc/redis
+mkdir -p %{buildroot}/etc/sysctl.d
 mkdir -p %{buildroot}/%{_unitdir}
 
 %{__install} -p -m 0644 %{SOURCE1} %{buildroot}/etc/redis/
 %{__install} -p -m 0644 %{SOURCE2} %{buildroot}/%{_unitdir}
 %{__install} -p -m 0644 %{SOURCE3} %{buildroot}/etc/redis/
 %{__install} -p -m 0644 %{SOURCE4} %{buildroot}/%{_unitdir}
+%{__install} -p -m 0644 %{SOURCE5} %{buildroot}/etc/sysctl.d/
 
 %clean
 rm -rf %{buildroot}
@@ -102,6 +104,7 @@ echo "=== pre-install done"
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just after the package is installed         ##
 ##--------------------------------------------------------------------------##
+sysctl -p /etc/sysctl.d/redis_sysctl.conf
 systemctl daemon-reload
 echo "#######################################################################"
 echo "[DB  path]:    /var/lib/redis/                                        #"
@@ -123,14 +126,14 @@ echo "=== post-install done"
 ##--------------------------------------------------------------------------##
 systemctl stop redis-server
 systemctl stop redis-sentinel
-rm -rf /var/run/redis/*
-rm -rf /var/log/redis/*
 echo "=== pre-uninstall done"
 
 %postun
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just after the package is uninstalled       ##
 ##--------------------------------------------------------------------------##
+rm -rf /var/run/redis
+rm -rf /var/log/redis
 echo "DB data still in /var/lib/redis, you can delete it manually."
 echo "=== post-uninstall done"
 
