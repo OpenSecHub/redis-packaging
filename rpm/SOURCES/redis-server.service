@@ -1,0 +1,31 @@
+[Unit]
+Description=Redis data structure server
+Documentation=https://redis.io/documentation
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+User=redis
+Group=redis
+PIDFile=/var/run/redis/redis-server.pid
+ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
+ExecStartPost=/bin/sleep 0.1
+Restart=always
+TimeoutStopSec=0
+
+UMask=0077
+PrivateTmp=yes
+LimitNOFILE=65535
+NoNewPrivileges=yes
+PrivateDevices=yes
+ProtectHome=yes
+ProtectSystem=full
+RuntimeDirectory=redis
+RuntimeDirectoryMode=2755
+CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+
+[Install]
+WantedBy=multi-user.target
