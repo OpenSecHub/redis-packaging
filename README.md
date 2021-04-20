@@ -1,6 +1,6 @@
 # redis-packaging
 
-> build redis rpm package
+> build redis rpm package on CentOS 7
 
 
 ```bash
