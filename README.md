@@ -30,6 +30,7 @@ rm -rf  ~/rpmbuild/
 # mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 rpmdev-setuptree
 
+rm -rf redis-packaging
 git clone https://github.com/OpenSecHub/redis-packaging.git
 
 cp redis-packaging/rpm/SOURCES/* ~/rpmbuild/SOURCES
@@ -42,7 +43,9 @@ spectool -g -R ~/rpmbuild/SPECS/redis.spec
 rpmbuild -ba ~/rpmbuild/SPECS/redis.spec
 
 # show rpm packages
-ls -lh  ~/rpmbuild/RPMS/x86_64/
+cd ~/rpmbuild/RPMS/x86_64/
+pwd
+ls -lh
 
 exit
 EOF
