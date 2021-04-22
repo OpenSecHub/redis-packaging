@@ -4,22 +4,32 @@
 
 
 ```bash
+#!/bin/bash
+
+REDISVER=6.2.2
+
 # install rpm tools
-yum install rpm-build redhat-rpm-config rpmdevtools 
+yum install -y rpm-build redhat-rpm-config rpmdevtools 
 
 # install build tools
-yum install make gcc openssl-devel
+yum install -y make gcc openssl-devel git
 
-# create a new user to do rpmbuild
-useradd -r -d /home/rpm -c "rpm maker" -s /bin/bash rpm
-mkdir -p /home/rpm
-chown -R rpm:rpm /home/rpm
-su rpm
+# create a new user(rpm) to do rpmbuild
+id rpm
+if [ $? -ne 0 ] ; then
+    useradd -r -d /home/rpm -c "rpm maker" -s /bin/bash rpm
+    mkdir -p /home/rpm
+    chown -R rpm:rpm /home/rpm
+fi
 
-# cd ~ && rpmdev-setuptree
-mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+# change user to rpm to do rpmbuild
+su rpm << EOF
 
-git clone https://github.com/OpenSecHub/redis-packaging.git
+cd ~
+# mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+rpmdev-setuptree 
+
+git clone https://github.com/OpenSecHub/redis-packaging.git -b ${REDISVER}
 
 cp redis-packaging/rpm/SOURCES/* ~/rpmbuild/SOURCES
 cp redis-packaging/rpm/SPECS/*   ~/rpmbuild/SPECS
@@ -32,4 +42,7 @@ rpmbuild -ba ~/rpmbuild/SPECS/redis.spec
 
 # show rpm packages
 ls -lh  ~/rpmbuild/RPMS/x86_64/
+
+exit
+EOF
 ```
