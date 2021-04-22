@@ -44,8 +44,7 @@ rpmbuild -ba ~/rpmbuild/SPECS/redis.spec
 
 # show rpm packages
 cd ~/rpmbuild/RPMS/x86_64/
-pwd
-ls -lh
+ls -lh $PWD/*
 
 exit
 EOF
