@@ -135,7 +135,7 @@ echo "=== pre-uninstall done"
 rm -rf /etc/redis
 rm -rf /var/run/redis
 rm -rf /var/log/redis
-userdel -rf rpm
+userdel -rf redis
 echo "DB data still in /var/lib/redis, you can delete it manually."
 echo "=== post-uninstall done"
 
