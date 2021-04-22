@@ -132,8 +132,10 @@ echo "=== pre-uninstall done"
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just after the package is uninstalled       ##
 ##--------------------------------------------------------------------------##
+rm -rf /etc/redis
 rm -rf /var/run/redis
 rm -rf /var/log/redis
+userdel -rf rpm
 echo "DB data still in /var/lib/redis, you can delete it manually."
 echo "=== post-uninstall done"
 
