@@ -148,6 +148,7 @@ echo "=== post-uninstall done"
 ##############################################################################
 
 %defattr(-,redis,redis,-)
+/etc/sysctl.d/redis_sysctl.conf
 %{_unitdir}/redis-server.service
 %{_unitdir}/redis-sentinel.service
 %config /etc/redis/redis.conf
