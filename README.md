@@ -1,6 +1,8 @@
 # redis-packaging
 
 > build redis rpm package on CentOS 7
+> 
+> Debian https://github.com/redis/redis-debian
 
 
 ```bash
