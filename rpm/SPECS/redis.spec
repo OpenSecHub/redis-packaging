@@ -5,7 +5,7 @@
 #                                                                            #
 ##############################################################################
 Name:           redis
-Version:        6.2.2
+Version:        6.2.3
 Release:        1%{?dist}
 Summary:        Redis is an in-memory database that persists on disk
 Group:          System Environment/Daemons
@@ -31,14 +31,14 @@ AutoReqProv:    no
 
 
 %description
-Redis is an open source (BSD licensed), in-memory data structure store, 
-used as a database, cache, and message broker. 
-Redis provides data structures such as strings, hashes, lists, sets, 
-sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, 
-and streams. 
-Redis has built-in replication, Lua scripting, LRU eviction, transactions, 
-and different levels of on-disk persistence, 
-and provides high availability via Redis Sentinel 
+Redis is an open source (BSD licensed), in-memory data structure store,
+used as a database, cache, and message broker.
+Redis provides data structures such as strings, hashes, lists, sets,
+sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes,
+and streams.
+Redis has built-in replication, Lua scripting, LRU eviction, transactions,
+and different levels of on-disk persistence,
+and provides high availability via Redis Sentinel
 and automatic partitioning with Redis Cluster.
 
 ##############################################################################
@@ -163,5 +163,5 @@ echo "=== post-uninstall done"
 #                              Change Logs                                   #
 #                                                                            #
 ##############################################################################
-* Wed Apr 21 2021 LubinLew
+* Tue May 4 2021 LubinLew
 - build redis-%{version}
