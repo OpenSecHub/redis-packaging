@@ -5,7 +5,7 @@
 #                                                                            #
 ##############################################################################
 Name:           redis
-Version:        6.2.3
+Version:        6.2.4
 Release:        1%{?dist}
 Summary:        Redis is an in-memory database that persists on disk
 Group:          System Environment/Daemons
@@ -50,7 +50,7 @@ and automatic partitioning with Redis Cluster.
 %setup -q -n "redis-%{version}"
 
 
-### https://github.com/redis/redis/tree/6.2.2#building-redis
+### https://github.com/redis/redis/tree/6.2.4#building-redis
 %build
 %{__make} -j`nproc`  \
      MALLOC=jemalloc \
@@ -88,17 +88,16 @@ rm -rf %{buildroot}
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just before the package is installed        ##
 ##--------------------------------------------------------------------------##
-echo "=== create user redis"
+# create user redis
 useradd -r -c "Redis User" -s /bin/bash redis
 
-echo "=== mkdir"
+# make work dir
 mkdir -p /var/log/redis
 chown -R redis:redis /var/log/redis
 mkdir -p /var/run/redis
 chown -R redis:redis /var/run/redis
 mkdir -p /var/lib/redis
 chown -R redis:redis /var/lib/redis
-echo "=== pre-install done"
 
 %post
 ##--------------------------------------------------------------------------##
@@ -118,7 +117,6 @@ echo "[service 2]:   /usr/lib/systemd/system/redis-sentinel.service         #"
 echo "[Listen]:      IPv4-> 127.0.0.1:6379, IPv6 -> [::1]:6379              #"
 echo "[password]:    nil                                                    #"
 echo "#######################################################################"
-echo "=== post-install done"
 
 %preun
 ##--------------------------------------------------------------------------##
@@ -126,7 +124,6 @@ echo "=== post-install done"
 ##--------------------------------------------------------------------------##
 systemctl stop redis-server
 systemctl stop redis-sentinel
-echo "=== pre-uninstall done"
 
 %postun
 ##--------------------------------------------------------------------------##
@@ -137,8 +134,6 @@ rm -rf /var/run/redis
 rm -rf /var/log/redis
 userdel -rf redis
 echo "DB data still in /var/lib/redis, you can delete it manually."
-echo "=== post-uninstall done"
-
 
 %files
 ##############################################################################
@@ -154,7 +149,6 @@ echo "=== post-uninstall done"
 %config /etc/redis/redis.conf
 %config /etc/redis/sentinel.conf
 /usr/local/bin/*
-
 
 
 %changelog
