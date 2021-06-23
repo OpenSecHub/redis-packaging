@@ -12,6 +12,7 @@
 git clone https://github.com/OpenSecHub/redis-packaging.git
 cd redis-packaging/Docker
 ./run.sh
+# rpms in output directory(redis-packaging/Docker/output)
 ```
 
 ### build in local
