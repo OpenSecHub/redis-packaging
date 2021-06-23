@@ -4,6 +4,17 @@
 >
 > Debian https://github.com/redis/redis-debian
 
+## build
+
+### build in docker
+
+```bash
+git clone https://github.com/OpenSecHub/redis-packaging.git
+cd redis-packaging/Docker
+./run.sh
+```
+
+### build in local
 
 ```bash
 #!/bin/bash
