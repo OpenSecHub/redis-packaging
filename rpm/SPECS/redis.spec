@@ -157,5 +157,5 @@ echo "DB data still in /var/lib/redis, you can delete it manually."
 #                              Change Logs                                   #
 #                                                                            #
 ##############################################################################
-* Mon July 26 2021 LubinLew
+* Mon Jul 26 2021 - LubinLew lgbxyz@gmail.com
 - build redis-%{version}
