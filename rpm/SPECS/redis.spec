@@ -5,7 +5,7 @@
 #                                                                            #
 ##############################################################################
 Name:           redis
-Version:        6.2.4
+Version:        6.2.5
 Release:        1%{?dist}
 Summary:        Redis is an in-memory database that persists on disk
 Group:          System Environment/Daemons
@@ -157,5 +157,5 @@ echo "DB data still in /var/lib/redis, you can delete it manually."
 #                              Change Logs                                   #
 #                                                                            #
 ##############################################################################
-* Tue May 4 2021 LubinLew
+* Mon July 26 2021 LubinLew
 - build redis-%{version}
