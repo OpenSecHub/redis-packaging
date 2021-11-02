@@ -5,7 +5,7 @@
 #                                                                            #
 ##############################################################################
 Name:           redis
-Version:        6.2.5
+Version:        6.2.6
 Release:        1%{?dist}
 Summary:        Redis is an in-memory database that persists on disk
 Group:          System Environment/Daemons
