@@ -9,6 +9,7 @@ cp -r ../rpm .
 
 # build docker
 docker build -t ${CONTAINER_NAME}:${CONTAINER_TAG} .
+rm -rf rpm
 
 # build source with docker
 rm -rf    output
