@@ -4,6 +4,15 @@
 >
 > Debian https://github.com/redis/redis-debian
 
+##### How to get centos8 redis spec files ?
+
+```bash
+yum install -y yum-utils
+yumdownloader --source reids
+rpm2cpio *.src.rpm | cpio -div
+```
+
+
 ## build
 
 ### build in docker
