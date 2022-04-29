@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
 CONTAINER_NAME=redis_builder
-CONTAINER_TAG=6.2.6
+CONTAINER_TAG=7.0.0
 
 # copy rpm sources
 rm -rf rpm

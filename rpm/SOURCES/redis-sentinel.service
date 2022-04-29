@@ -1,18 +1,16 @@
 [Unit]
-Description=Redis Sentinel for HA
+Description=Redis Sentinel
 Documentation=https://redis.io/documentation
 Wants=network-online.target
 After=network-online.target
+
 
 [Service]
 Type=forking
 User=redis
 Group=redis
-PIDFile=/var/run/redis/redis-sentinel.pid
-ExecStart=/usr/local/bin/redis-server /etc/redis/sentinel.conf --sentinel
-ExecStartPost=/bin/sleep 0.1
+ExecStart=/usr/local/bin/redis-sentinel /etc/redis/sentinel.conf --sentinel
 Restart=always
-TimeoutStopSec=0
 
 UMask=0077
 PrivateTmp=yes

@@ -4,15 +4,13 @@ Documentation=https://redis.io/documentation
 Wants=network-online.target
 After=network-online.target
 
+
 [Service]
 Type=forking
 User=redis
 Group=redis
-PIDFile=/var/run/redis/redis-server.pid
 ExecStart=/usr/local/bin/redis-server /etc/redis/redis.conf
-ExecStartPost=/bin/sleep 0.1
 Restart=always
-TimeoutStopSec=0
 
 UMask=0077
 PrivateTmp=yes

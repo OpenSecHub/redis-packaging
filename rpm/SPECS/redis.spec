@@ -5,7 +5,7 @@
 #                                                                            #
 ##############################################################################
 Name:           redis
-Version:        6.2.6
+Version:        7.0.0
 Release:        1%{?dist}
 Summary:        Redis is an in-memory database that persists on disk
 Group:          System Environment/Daemons
@@ -18,11 +18,9 @@ Packager:       LubinLew
 
 Source0:        https://download.redis.io/releases/redis-%{version}.tar.gz
 
-Source1:        redis.conf
-Source2:        redis-server.service
-Source3:        sentinel.conf
-Source4:        redis-sentinel.service
-Source5:        redis_sysctl.conf
+Source1:        redis.service
+Source2:        redis-sentinel.service
+Source3:        redis_sysctl.conf
 
 ### if you want do make test, you need  `yum install tcl tcltls`
 BuildRequires:  systemd, gcc, make, openssl-devel
@@ -50,7 +48,7 @@ and automatic partitioning with Redis Cluster.
 %setup -q -n "redis-%{version}"
 
 
-### https://github.com/redis/redis/tree/6.2.4#building-redis
+### https://github.com/redis/redis/tree/7.0.0#building-redis
 %build
 %{__make} -j`nproc`  \
      MALLOC=jemalloc \
@@ -69,11 +67,22 @@ mkdir -p %{buildroot}/etc/redis
 mkdir -p %{buildroot}/etc/sysctl.d
 mkdir -p %{buildroot}/%{_unitdir}
 
-%{__install} -p -m 0644 %{SOURCE1} %{buildroot}/etc/redis/
-%{__install} -p -m 0644 %{SOURCE2} %{buildroot}/%{_unitdir}
-%{__install} -p -m 0644 %{SOURCE3} %{buildroot}/etc/redis/
-%{__install} -p -m 0644 %{SOURCE4} %{buildroot}/%{_unitdir}
-%{__install} -p -m 0644 %{SOURCE5} %{buildroot}/etc/sysctl.d/
+sed -i 's#daemonize no#daemonize yes#' redis.conf
+sed -i 's#logfile ""#logfile /var/log/redis/redis_6379.log#' redis.conf
+sed -i 's#dir ./#dir /var/lib/redis/#' redis.conf
+%{__install} -p -m 0644 redis.conf    %{buildroot}/etc/redis/
+
+sed -i 's#daemonize no#daemonize yes#' sentinel.conf
+sed -i 's#logfile ""#logfile /var/log/redis/sentinel.log#' sentinel.conf
+%{__install} -p -m 0644 sentinel.conf %{buildroot}/etc/redis/
+
+%{__install} -p -m 0644 %{SOURCE1}    %{buildroot}/%{_unitdir}
+%{__install} -p -m 0644 %{SOURCE2}    %{buildroot}/%{_unitdir}
+
+%{__install} -p -m 0644 %{SOURCE3}    %{buildroot}/etc/sysctl.d/
+
+
+
 
 %clean
 rm -rf %{buildroot}
@@ -89,13 +98,11 @@ rm -rf %{buildroot}
 ##   Scriptlet that is executed just before the package is installed        ##
 ##--------------------------------------------------------------------------##
 # create user redis
-useradd -r -c "Redis User" -s /bin/bash redis
+useradd -r -c "Redis User" redis
 
 # make work dir
 mkdir -p /var/log/redis
 chown -R redis:redis /var/log/redis
-mkdir -p /var/run/redis
-chown -R redis:redis /var/run/redis
 mkdir -p /var/lib/redis
 chown -R redis:redis /var/lib/redis
 
@@ -103,36 +110,31 @@ chown -R redis:redis /var/lib/redis
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just after the package is installed         ##
 ##--------------------------------------------------------------------------##
+
 sysctl -p /etc/sysctl.d/redis_sysctl.conf
+
+echo "#######################################################################"
+echo "[DB     ]:    /var/lib/redis/                                         #"
+echo "[log    ]:    /var/log/redis/                                         #"
+echo "[config ]:    /etc/redis/                                             #"
+echo "[service]:    redis.service & redis-sentinel.service                  #"
+echo "#######################################################################"
 systemctl daemon-reload
-echo "#######################################################################"
-echo "[DB  path]:    /var/lib/redis/                                        #"
-echo "[config 1]:    /etc/redis/redis.conf                                  #"
-echo "[config 2]:    /etc/redis/sentinel.conf                               #"
-echo "[log path]:    /var/log/redis/redis-{server|sentinel}.log             #"
-echo "[pid path]:    /var/run/redis/redis-{server|sentinel}.pid             #"
-echo "[unix socket]: /var/run/redis/redis-server.sock                       #"
-echo "[service 1]:   /usr/lib/systemd/system/redis-server.service           #"
-echo "[service 2]:   /usr/lib/systemd/system/redis-sentinel.service         #"
-echo "[Listen]:      IPv4-> 127.0.0.1:6379, IPv6 -> [::1]:6379              #"
-echo "[password]:    nil                                                    #"
-echo "#######################################################################"
 
 %preun
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just before the package is uninstalled      ##
 ##--------------------------------------------------------------------------##
-systemctl stop redis-server
-systemctl stop redis-sentinel
+systemctl stop redis-server   >/dev/null 2>&1
+systemctl stop redis-sentinel >/dev/null 2>&1
 
 %postun
 ##--------------------------------------------------------------------------##
 ##   Scriptlet that is executed just after the package is uninstalled       ##
 ##--------------------------------------------------------------------------##
-rm -rf /etc/redis
-rm -rf /var/run/redis
-rm -rf /var/log/redis
-userdel -rf redis
+rm -rf /etc/redis      >/dev/null 2>&1
+rm -rf /var/log/redis  >/dev/null 2>&1
+userdel -rf redis      >/dev/null 2>&1
 echo "DB data still in /var/lib/redis, you can delete it manually."
 
 %files
@@ -142,9 +144,9 @@ echo "DB data still in /var/lib/redis, you can delete it manually."
 #                                                                            #
 ##############################################################################
 
-%defattr(-,redis,redis,-)
+%defattr(-,root,root,-)
 /etc/sysctl.d/redis_sysctl.conf
-%{_unitdir}/redis-server.service
+%{_unitdir}/redis.service
 %{_unitdir}/redis-sentinel.service
 %config /etc/redis/redis.conf
 %config /etc/redis/sentinel.conf
@@ -157,5 +159,5 @@ echo "DB data still in /var/lib/redis, you can delete it manually."
 #                              Change Logs                                   #
 #                                                                            #
 ##############################################################################
-* Mon Jul 26 2021 - LubinLew lgbxyz@gmail.com
+* Fri Apr 29 2022 - LubinLew lgbxyz@gmail.com
 - build redis-%{version}

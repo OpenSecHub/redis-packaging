@@ -7,6 +7,9 @@ RUN yum install -y rpm-build redhat-rpm-config rpmdevtools
 # install build tools
 RUN yum install -y make gcc openssl-devel
 
+# redis makefile need these
+RUN yum install -y which python3
+
 # create new user
 RUN adduser redis
 RUN mkdir -p /home/redis/rpmbuild
