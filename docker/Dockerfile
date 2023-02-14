@@ -4,7 +4,7 @@ FROM centos:7
 #RUN rm -f /etc/yum.repos.d/*
 
 # add epel repo
-RUN yum install epel-release
+RUN yum install -y epel-release
 
 # install rpm tools
 RUN yum install -y rpm-build redhat-rpm-config rpmdevtools
