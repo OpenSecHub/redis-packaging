@@ -19,13 +19,13 @@ jobs:
         run: |
           REDIS_URL="https://github.com/redis/redis/releases"
           REDIS_LOC="location: ${REDIS_URL}/tag/"
-          REDIS_VERSION=$(curl -Isk ${REDIS_URL}/latest"| grep -i "${REDIS_LOC}" | sed "s#${REDIS_LOC}##i | tr -d '\r')
+          REDIS_VERSION=$(curl -Isk ${REDIS_URL}/latest"| grep -i "${REDIS_LOC}" | sed "s#${REDIS_LOC}##i" | tr -d '\r')
           echo "Redis Lateset Version: ${REDIS_VERSION}"
           PROJECT_URL="https://github.com/OpenSecHub/redis-packaging/releases"
           PROJECT_LOC="location: ${PROJECT_URL}/tag/"
           TAG=$(curl -Isk "${PROJECT_URL}/latest" | grep -i "${PROJECT_LOC}" | sed "s#${PROJECT_LOC}##i" | tr -d '\r')
           echo "Project Latest Tag: ${TAG}"
-          if [ "${TAG}" != ${VERSION} ] ; then
+          if [ ${TAG} != ${VERSION} ] ; then
             echo "GOON=true"          >> $GITHUB_ENV
             echo "VERSION=$VERSION"   >> $GITHUB_ENV
           else
