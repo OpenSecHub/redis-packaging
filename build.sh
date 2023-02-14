@@ -4,7 +4,7 @@ cd `dirname $0`
 ##########################################################
 REALSE_URL="https://github.com/redis/redis/releases"
 LOCATION="Location: ${REALSE_URL}/tag/"
-REDIS_VERSION=$(curl -sI ${REALSE_URL}/latest | grep -i "${LOCATION}" | sed "s#${LOCATION}##" | tr -d '\r')
+REDIS_VERSION=$(curl -sI ${REALSE_URL}/latest | grep -i "${LOCATION}" | sed "s#${LOCATION}##i" | tr -d '\r')
 
 RELEASE_DATE=`date +'%a %b %d %Y'`
 AUTHOR="LubinLew lgbxyz@gmail.com"
