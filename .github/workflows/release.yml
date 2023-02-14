@@ -1,0 +1,90 @@
+name: release
+
+on:
+  schedule:
+    - cron: '0 0 */1 * *'
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Check Redis Latest Version
+        run: |
+          REDIS_URL="https://github.com/redis/redis/releases"
+          REDIS_LOC="location: ${REDIS_URL}/tag/"
+          REDIS_VERSION=$(curl -Isk ${REDIS_URL}/latest"| grep -i "${REDIS_LOC}" | sed "s#${REDIS_LOC}##i | tr -d '\r'")
+          echo "Redis Lateset Version: ${REDIS_VERSION}"
+          PROJECT_URL="https://github.com/OpenSecHub/redis-packaging/releases"
+          PROJECT_LOC="location: ${PROJECT_URL}/tag/"
+          TAG=$(curl -Isk "${PROJECT_URL}/latest" | grep -i "${PROJECT_LOC}" | sed "s#${PROJECT_LOC}##i" | tr -d '\r')
+          echo "Project Latest Tag: ${TAG}"
+          if [ "${TAG}" != ${VERSION} ] ; then
+            echo "GOON=true"          >> $GITHUB_ENV
+            echo "VERSION=$VERSION"   >> $GITHUB_ENV
+          else
+            echo "GOON=false"         >> $GITHUB_ENV
+            echo "Already Up to Date"
+          fi
+
+      - name: Build Reids CentOS7 package
+        if: env.GOON == 'true'
+        run: |
+          bash build.sh
+          git config --global user.name  "LubinLew"
+          git config --global user.email "lgbxyz@gmail.com"
+          echo "${{env.VERSION}}" >  version.txt
+          git add version.txt
+          git commit -m "Redis ${{env.VERSION}}"
+          git push
+
+      - name: Create Tag
+        uses: rickstaa/action-create-tag@v1
+        if: env.GOON == 'true'
+        with:
+          tag: ${{env.VERSION}}
+          message: "Redis ${{env.VERSION}}"
+
+      - name: Create Release Note
+        if: env.GOON == 'true'
+        run: |
+          echo -e "# Redis-${{env.VERSION}} rpm package for CentOS7(x64)\n\n" > releaseNote.md
+          echo -e "### Install\n"                     >> releaseNote.md
+          echo -e "\`\`\`bash"                        >> releaseNote.md
+          echo -e "rpm -ivh redis-${{env.VERSION}}-1.el7.x86_64.rpm" >> releaseNote.md
+          echo -e "\`\`\`\n"                          >> releaseNote.md
+          echo -e "### Requires\n"                    >> releaseNote.md
+          echo -e "\`\`\`bash"                        >> releaseNote.md
+          echo -e "openssl-libs, systemd-libs"        >> releaseNote.md
+          echo -e "\`\`\`\n"                          >> releaseNote.md
+          echo -e "### Usages\n"                      >> releaseNote.md
+          echo -e "\`\`\`bash"                        >> releaseNote.md
+          echo -e "systemctl start redis-server"      >> releaseNote.md
+          echo -e "systemctl stop  redis-server\n"    >> releaseNote.md
+          echo -e "systemctl start redis-sentinel"    >> releaseNote.md
+          echo -e "systemctl stop  redis-sentinel\n"  >> releaseNote.md
+          echo -e "\`\`\`\n"                          >> releaseNote.md
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        if: env.GOON == 'true'
+        with:
+          tag: ${{env.VERSION}}
+          name: "${{env.VERSION}}"
+          bodyFile: "releaseNote.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Files
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: env.GOON == 'true'
+        with:
+          file: "output/RPMS/x86_64/*.rpm,output/SRPMS/*.rpm,output/build.log"
+          tags: ${{env.VERSION}}

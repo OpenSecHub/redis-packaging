@@ -14,11 +14,11 @@ Restart=always
 
 UMask=0077
 PrivateTmp=yes
-LimitNOFILE=65535
+LimitNOFILE=infinity
 NoNewPrivileges=yes
 PrivateDevices=yes
 ProtectHome=yes
-ProtectSystem=full
+ProtectSystem=true
 RuntimeDirectory=redis
 RuntimeDirectoryMode=2755
 CapabilityBoundingSet=CAP_SETGID CAP_SETUID CAP_SYS_RESOURCE

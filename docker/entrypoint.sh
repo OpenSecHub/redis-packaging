@@ -1,9 +1,10 @@
 #!/bin/bash
 
-su redis << EOF
-cd ~
+if [ ! -d /root/rpmbuild ] ; then
+  echo "Mount Resources on /root/rpmbuild"
+  exit 127
+fi
 
-cp -r ~/buildres/*  ~/rpmbuild/
 
 # download redis source
 spectool -g -R ~/rpmbuild/SPECS/redis.spec
@@ -11,5 +12,4 @@ spectool -g -R ~/rpmbuild/SPECS/redis.spec
 # generate rpm packages
 rpmbuild -ba ~/rpmbuild/SPECS/redis.spec 2>&1 | tee ~/rpmbuild/build.log
 
-exit
-EOF
+exit 0

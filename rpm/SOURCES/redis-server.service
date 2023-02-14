@@ -14,7 +14,7 @@ Restart=always
 
 UMask=0077
 PrivateTmp=yes
-LimitNOFILE=65535
+LimitNOFILE=infinity
 NoNewPrivileges=yes
 PrivateDevices=yes
 ProtectHome=yes
